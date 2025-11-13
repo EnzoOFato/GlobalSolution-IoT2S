@@ -39,7 +39,7 @@ Quando se trata de Internet das Coisas e microcontroladores, nossa solução ten
 
 - Projeto Wokwi - Solução: [Clique aqui](https://wokwi.com/projects/447424608338817025)
 
-- Video: [Clique aqui](preencher)
+- Video: [Clique aqui](https://youtu.be/q26oikTwx7Q)
 
 # Integrantes
 * Enzo Amá Fatobene - RM: 562138
