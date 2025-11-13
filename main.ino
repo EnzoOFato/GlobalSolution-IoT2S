@@ -46,12 +46,12 @@ DHT dht(DHTPIN, DHTTYPE);
 LiquidCrystal_I2C lcd(LCDADDR, LCDColunas, LCDFileiras);
 
 void setup() {
-  // put your setup code here, to run once:
+  // Setup das configurações iniciais, incluindo conexões WiFi e MQTT
   Serial.begin(115200);
-  conectWifi();
+  conectWifi(); // Função de conexão WiFi
   MQTT.setServer(mqttBroker, port);
   MQTT.setCallback(mqtt_callback);
-  initAll();
+  initAll(); // Função de inicialização dos componentes
 }
 
 void loop() {
