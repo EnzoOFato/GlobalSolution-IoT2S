@@ -106,12 +106,12 @@ void conectWifi(){ // Função de conexão WiFi
     Serial.println(WiFi.localIP());
 }
 
-void conectMqtt(){
-  while (!MQTT.connected()) {
+void conectMqtt(){ // Função de conexão MQTT
+  while (!MQTT.connected()) { // Tenta conectar enquanto não estiver conectado
     Serial.println("Tentando conectar ao Broker...");
     if (MQTT.connect("ESP32Client")) {
       Serial.println("Conectado ao Broker"); // Sucesso na Reconexão
-      MQTT.subscribe(topico_subs);
+      MQTT.subscribe(topico_subs); // Tópico de recepção de mensagens
     } else {
       Serial.print("Falha, rc= ");
       Serial.println(MQTT.state()); // Mensagem da falha
@@ -120,9 +120,9 @@ void conectMqtt(){
   }
 }
 
-void VerificaConexoesWiFIEMQTT() {
-    if (!MQTT.connected()){
-      conectMqtt();
+void VerificaConexoesWiFIEMQTT() { // Função para verificar conexões WiFi e MQTT
+    if (!MQTT.connected()){ // Verifica conexão MQTT
+      conectMqtt(); // Conecta ao Borker noovamente
       conectWifi();
     }
 }
