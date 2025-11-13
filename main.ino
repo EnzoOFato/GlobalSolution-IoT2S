@@ -21,7 +21,7 @@ const char* topico_subs = "work/in";
 const char* topico_mqtt = "work/out";
 
 // Configuração LED com millis
-#define led 4;
+#define led 4
 unsigned long tempo = 0;
 bool ledAceso = false;
 
