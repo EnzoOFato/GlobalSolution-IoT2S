@@ -3,7 +3,8 @@
 // Integrantes:
 /*
 Enzo Amá Fatobene - RM: 562138
-
+João Victor Rodrigues de Mattos - RM: 564249
+Paulo Henrique Barboza de Oliveira Ramos - RM: 562179
 */
 
 // Bibliotecas necessárias: WiFi, PubSubClient, DHT, LiquidCrystal_I2C
