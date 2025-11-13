@@ -1,0 +1,176 @@
+// Projeto dedicado a Global Solution 2025.2 baseado em ESP32 com sensor DHT22, display LCD I2C, buzzer e LED, comunicando via MQT
+// Intuito do projeto é monitorar temperatura e umidade, exibindo mensagens recebidas via MQTT no display LCD, a fim de promover um melhor ambiente de trabalho.
+// Integrantes:
+/*
+Enzo Amá Fatobene - RM: 562138
+
+*/
+
+#include <WiFi.h>
+#include <PubSubClient.h>
+#include <DHT.h>
+#include <LiquidCrystal_I2C.h>
+
+const char* SSID = "Wokwi-GUEST";
+const char* password = "";
+const char* mqttBroker = "68.154.50.209";
+const int port = 1883;
+const char* topico_subs = "work/in";
+const char* topico_mqtt = "work/out";
+
+unsigned long tempo = 0;
+int led = 4;
+bool ledAceso = false;
+
+#define buzzpin 19
+bool buzzerAtivo = false;
+unsigned long tempoBuzzer = 0;
+
+WiFiClient espClient;
+PubSubClient MQTT(espClient);
+
+#define DHTPIN 15
+#define DHTTYPE DHT22
+DHT dht(DHTPIN, DHTTYPE);
+
+#define LCDADDR 0x27
+#define LCDColunas 20
+#define LCDFileiras 4
+LiquidCrystal_I2C lcd(LCDADDR, LCDColunas, LCDFileiras);
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(115200);
+  conectWifi();
+  MQTT.setServer(mqttBroker, port);
+  MQTT.setCallback(mqtt_callback);
+  initAll();
+}
+
+void loop() {
+  if(!MQTT.connected()){
+    conectMqtt();
+  }
+  VerificaConexoesWiFIEMQTT();
+  MQTT.loop();
+  publish();
+  delay(2000);
+  unsigned long tempo_atual = millis();
+
+  if(!ledAceso && (tempo_atual - tempo >= 30000)){
+    digitalWrite(led, HIGH);
+    ledAceso = true;
+    tempo = tempo_atual;
+
+    tone(buzzpin, 1000);
+    buzzerAtivo = true;
+    tempoBuzzer = tempo_atual;
+  }
+  else if(ledAceso && (tempo_atual - tempo >= 5000)){
+    digitalWrite(led, LOW);
+    ledAceso = false;
+    tempo = tempo_atual;
+  }
+
+  if(buzzerAtivo && (tempo_atual - tempoBuzzer >= 1000)){
+    noTone(buzzpin);
+    buzzerAtivo = false;
+  }
+}
+
+void initAll(){
+  dht.begin();
+  lcd.init();
+  lcd.backlight();
+  pinMode(led, OUTPUT);
+}
+
+void conectWifi(){
+  if (WiFi.status() == WL_CONNECTED)
+        return;
+    WiFi.begin(SSID, password);
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(1000);
+        Serial.print(".");
+    }
+    Serial.println("Conectado com êxito a rede");
+    Serial.print(SSID);
+    Serial.println("IP obtido: ");
+    Serial.println(WiFi.localIP());
+}
+
+void conectMqtt(){
+  while (!MQTT.connected()) {
+    Serial.println("Tentando conectar ao Broker...");
+    if (MQTT.connect("ESP32Client")) {
+      Serial.println("Conectado ao Broker"); // Sucesso na Reconexão
+      MQTT.subscribe(topico_subs);
+    } else {
+      Serial.print("Falha, rc= ");
+      Serial.println(MQTT.state()); // Mensagem da falha
+      delay(2000);
+    }
+  }
+}
+
+void VerificaConexoesWiFIEMQTT() {
+    if (!MQTT.connected()){
+      conectMqtt();
+      conectWifi();
+    }
+}
+
+void mqtt_callback(char* topic, byte* payload, unsigned int length) {
+  Serial.println("Mensagem do tópico: ");
+  Serial.println(topic);
+  String msg;
+  for (int i = 0; i < length; i++) {
+    char c = (char)payload[i];
+    msg += c;
+  }
+  Serial.print("- Mensagem recebida: ");
+  Serial.println(msg);
+  handleLCD(msg);
+}
+
+void publish(){
+  float umidade = dht.readHumidity();
+  float temperatura = dht.readTemperature();
+  if (isnan(umidade) || isnan(temperatura)) {
+    Serial.println("Falha ao ler o sensor DHT22!");
+    return;
+  }
+
+  String envio = "{";
+  envio += "\"temperatura\": " + String(temperatura) + ",";
+  envio += "\"umidade\": " + String(umidade) + ",";
+
+  MQTT.publish(topico_mqtt, envio.c_str());
+  Serial.println("Dados enviados: " + envio);
+}
+
+void handleLCD(String mensagem) {
+  lcd.clear();
+
+  const int MAX_COLS = 20;
+  const int MAX_ROWS = 4;
+
+  int start = 0;
+  int linha = 0;
+
+  while (start < mensagem.length() && linha < MAX_ROWS) {
+
+    String parte = mensagem.substring(start, start + MAX_COLS);
+
+    parte.trim();
+
+    int espacos = (MAX_COLS - parte.length()) / 2;
+    if (espacos < 0) espacos = 0;
+
+    lcd.setCursor(espacos, linha);
+    lcd.print(parte);
+
+    start += MAX_COLS;
+    linha++;
+  }
+}
