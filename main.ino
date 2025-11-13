@@ -55,41 +55,41 @@ void setup() {
 }
 
 void loop() {
-  if(!MQTT.connected()){
+  if(!MQTT.connected()){ //Caso a conexão MQTT seja perdida, tenta reconectar
     conectMqtt();
   }
-  VerificaConexoesWiFIEMQTT();
-  MQTT.loop();
-  publish();
-  delay(2000);
-  unsigned long tempo_atual = millis();
+  VerificaConexoesWiFIEMQTT(); // Verifica conexões WiFi e MQTT
+  MQTT.loop(); // Mantém a conexão MQTT ativa
+  publish(); // Publica os dados do sensor DHT22
+  delay(2000); // Aguarda 2 segundos entre as publicações
+  unsigned long tempo_atual = millis(); // Gerenciamento do LED e Buzzer com millis
 
-  if(!ledAceso && (tempo_atual - tempo >= 30000)){
+  if(!ledAceso && (tempo_atual - tempo >= 30000)){ // Acende o LED a cada 30 segundos
     digitalWrite(led, HIGH);
     ledAceso = true;
     tempo = tempo_atual;
 
-    tone(buzzpin, 1000);
+    tone(buzzpin, 1000); // Ativa o buzzer por 1 segundo
     buzzerAtivo = true;
     tempoBuzzer = tempo_atual;
   }
-  else if(ledAceso && (tempo_atual - tempo >= 5000)){
+  else if(ledAceso && (tempo_atual - tempo >= 5000)){ // Apaga o LED após 5 segundos
     digitalWrite(led, LOW);
     ledAceso = false;
     tempo = tempo_atual;
   }
 
-  if(buzzerAtivo && (tempo_atual - tempoBuzzer >= 1000)){
+  if(buzzerAtivo && (tempo_atual - tempoBuzzer >= 1000)){ // Desativa o buzzer após 1 segundo
     noTone(buzzpin);
     buzzerAtivo = false;
   }
 }
 
-void initAll(){
-  dht.begin();
-  lcd.init();
-  lcd.backlight();
-  pinMode(led, OUTPUT);
+void initAll(){ //Função de inicialização dos componentes
+  dht.begin(); // Inicializa o sensor DHT22
+  lcd.init(); // Inicializa o display LCD I2C
+  lcd.backlight(); // Ativa a luz de fundo do LCD
+  pinMode(led, OUTPUT); // Configura o pino do LED como saída
 }
 
 void conectWifi(){
