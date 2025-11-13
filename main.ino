@@ -6,11 +6,13 @@ Enzo Amá Fatobene - RM: 562138
 
 */
 
+// Bibliotecas necessárias: WiFi, PubSubClient, DHT, LiquidCrystal_I2C
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <DHT.h>
 #include <LiquidCrystal_I2C.h>
 
+// Definições de rede e MQTT
 const char* SSID = "Wokwi-GUEST";
 const char* password = "";
 const char* mqttBroker = "68.154.50.209";
@@ -18,21 +20,26 @@ const int port = 1883;
 const char* topico_subs = "work/in";
 const char* topico_mqtt = "work/out";
 
+// Configuração LED com millis
+#define led = 4;
 unsigned long tempo = 0;
-int led = 4;
 bool ledAceso = false;
 
+// Configuração Buzzer com millis
 #define buzzpin 19
 bool buzzerAtivo = false;
 unsigned long tempoBuzzer = 0;
 
+// Inicialização dos objetos de cliente
 WiFiClient espClient;
 PubSubClient MQTT(espClient);
 
+// Delcaração das variáveis relativas ao sensor DHT22
 #define DHTPIN 15
 #define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
 
+// Delcaração das variáveis relativas ao painel LCD I2Ct
 #define LCDADDR 0x27
 #define LCDColunas 20
 #define LCDFileiras 4
