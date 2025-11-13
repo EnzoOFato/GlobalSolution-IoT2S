@@ -92,15 +92,15 @@ void initAll(){ //Função de inicialização dos componentes
   pinMode(led, OUTPUT); // Configura o pino do LED como saída
 }
 
-void conectWifi(){
-  if (WiFi.status() == WL_CONNECTED)
+void conectWifi(){ // Função de conexão WiFi
+  if (WiFi.status() == WL_CONNECTED) // Verifica se já está conectado, caso positivo retorna
         return;
-    WiFi.begin(SSID, password);
-    while (WiFi.status() != WL_CONNECTED) {
+    WiFi.begin(SSID, password); // Inicia a conexão WiFi
+    while (WiFi.status() != WL_CONNECTED) { // Aguarda até conectar
         delay(1000);
         Serial.print(".");
     }
-    Serial.println("Conectado com êxito a rede");
+    Serial.println("Conectado com êxito a rede"); // Mensagem de sucesso
     Serial.print(SSID);
     Serial.println("IP obtido: ");
     Serial.println(WiFi.localIP());
