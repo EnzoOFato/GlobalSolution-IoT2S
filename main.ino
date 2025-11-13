@@ -156,26 +156,28 @@ void publish(){ // Função para publicar os dados do sensor DHT22 via MQTT
   Serial.println("Dados enviados: " + envio); // Confirmação dos dados enviados via Serial
 }
 
-void handleLCD(String mensagem) {
-  lcd.clear();
+void handleLCD(String mensagem) { // Função para exibir mensagens recebidas no display LCD I2C
+  lcd.clear(); // Limpa o display antes de exibir a nova mensagem
 
+  // Define o número máximo de colunas e linhas do LCD
   const int MAX_COLS = 20;
   const int MAX_ROWS = 4;
 
+  // Divide a mensagem em partes que cabem no display e centraliza cada linha
   int start = 0;
   int linha = 0;
 
-  while (start < mensagem.length() && linha < MAX_ROWS) {
+  while (start < mensagem.length() && linha < MAX_ROWS) { // Enquanto houver mensagem e linhas disponíveis
 
     String parte = mensagem.substring(start, start + MAX_COLS);
 
-    parte.trim();
+    parte.trim(); // Remove espaços em branco extras
 
     int espacos = (MAX_COLS - parte.length()) / 2;
     if (espacos < 0) espacos = 0;
 
-    lcd.setCursor(espacos, linha);
-    lcd.print(parte);
+    lcd.setCursor(espacos, linha); // Centraliza a parte da mensagem na linha atual
+    lcd.print(parte); // Exibe a parte da mensagem no LCD
 
     start += MAX_COLS;
     linha++;
