@@ -140,20 +140,20 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length) { // Funçã
   handleLCD(msg); // Chama a função para exibir a mensagem no LCD
 }
 
-void publish(){
-  float umidade = dht.readHumidity();
-  float temperatura = dht.readTemperature();
-  if (isnan(umidade) || isnan(temperatura)) {
+void publish(){ // Função para publicar os dados do sensor DHT22 via MQTT
+  float umidade = dht.readHumidity(); // Lê a umidade
+  float temperatura = dht.readTemperature(); // Lê a temperatura em Celsius
+  if (isnan(umidade) || isnan(temperatura)) { // Verifica se a leitura falhou
     Serial.println("Falha ao ler o sensor DHT22!");
     return;
   }
 
-  String envio = "{";
+  String envio = "{"; // Formata os dados em JSON para envio via MQTT
   envio += "\"temperatura\": " + String(temperatura) + ",";
   envio += "\"umidade\": " + String(umidade) + ",";
 
-  MQTT.publish(topico_mqtt, envio.c_str());
-  Serial.println("Dados enviados: " + envio);
+  MQTT.publish(topico_mqtt, envio.c_str()); // Publica os dados no tópico MQTT
+  Serial.println("Dados enviados: " + envio); // Confirmação dos dados enviados via Serial
 }
 
 void handleLCD(String mensagem) {
