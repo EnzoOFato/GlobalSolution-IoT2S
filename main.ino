@@ -127,17 +127,17 @@ void VerificaConexoesWiFIEMQTT() { // Função para verificar conexões WiFi e M
     }
 }
 
-void mqtt_callback(char* topic, byte* payload, unsigned int length) {
+void mqtt_callback(char* topic, byte* payload, unsigned int length) { // Função de callback para mensagens MQTT recebidas
   Serial.println("Mensagem do tópico: ");
-  Serial.println(topic);
-  String msg;
-  for (int i = 0; i < length; i++) {
+  Serial.println(topic); // Confirmação do tópico recebido
+  String msg; 
+  for (int i = 0; i < length; i++) { // Converte o payload para array de caracteres
     char c = (char)payload[i];
     msg += c;
   }
   Serial.print("- Mensagem recebida: ");
   Serial.println(msg);
-  handleLCD(msg);
+  handleLCD(msg); // Chama a função para exibir a mensagem no LCD
 }
 
 void publish(){
