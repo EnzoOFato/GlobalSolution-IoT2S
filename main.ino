@@ -150,7 +150,8 @@ void publish(){ // Função para publicar os dados do sensor DHT22 via MQTT
 
   String envio = "{"; // Formata os dados em JSON para envio via MQTT
   envio += "\"temperatura\": " + String(temperatura) + ",";
-  envio += "\"umidade\": " + String(umidade) + ",";
+  envio += "\"umidade\": " + String(umidade);
+  envio += "}";
 
   MQTT.publish(topico_mqtt, envio.c_str()); // Publica os dados no tópico MQTT
   Serial.println("Dados enviados: " + envio); // Confirmação dos dados enviados via Serial
